@@ -52,17 +52,16 @@ final class Live
      */
     public function refresh(): void
     {
-        $this->output->clear();
-
+        $this->clear();
         $this->render();
     }
 
     /**
-     * Freezes the terminal for the given amount of seconds.
+     * Freezes the terminal for the given amount of milliseconds.
      */
-    public function freeze(int $seconds): void
+    public function freeze(int $milliseconds): void
     {
-        sleep($seconds);
+        usleep($milliseconds * 1000);
     }
 
     /**
@@ -70,10 +69,10 @@ final class Live
      *
      * @return $this
      */
-    public function refreshEvery(int $seconds): self
+    public function refreshEvery(int $milliseconds = 0, int $seconds = 0): self
     {
         while (true) {
-            $this->freeze($seconds);
+            $this->freeze($milliseconds + $seconds * 1000);
 
             $html = call_user_func($this->htmlResolver, $refreshingEvent = new RefreshEvent());
 
@@ -81,10 +80,9 @@ final class Live
                 break;
             }
 
-            $this->output->clear();
-
             $html = $this->renderer->parse((string) $html);
 
+            $this->clear();
             $this->output->write($html->toString());
         }
 

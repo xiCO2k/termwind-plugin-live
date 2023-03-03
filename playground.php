@@ -8,4 +8,4 @@ live(function () {
     static $total = 0;
 
     return sprintf('The content was refreshed %d times.', ++$total);
-})->refreshEvery(1);
+})->refreshEvery(seconds: 1);
