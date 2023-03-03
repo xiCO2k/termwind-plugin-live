@@ -1,3 +1,7 @@
+<p align="center">
+    <img width="150" height="150" alt="Termwind logo" src="/art/logo.png"/>
+</p>
+
 <h1 align="center" style="border:none !important">
     <code>Termwind Live Plugin</code>
     <br>
