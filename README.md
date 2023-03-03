@@ -36,9 +36,9 @@ composer require xico2k/termwind-plugin-live
 ```php
 use function Termwind\Live\live;
 
-$total = 0;
+live(function () use ($total) {
+    static $total = 0;
 
-live(function () use (&$total) {
     return sprintf('The content was refreshed %d times.', ++$total);
 })->refreshEvery(1);
 ```
