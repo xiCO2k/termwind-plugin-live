@@ -21,6 +21,14 @@ it('renders the closure result', function () {
     live(fn () => 'foo');
 });
 
+it('renders a string', function () {
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+    $section->shouldReceive('write')->once()->with('foo');
+    $this->output->shouldReceive('section')->once()->andReturn($section);
+
+    live('foo');
+});
+
 it('clears the previous closure result', function () {
     $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
     $section->shouldReceive('write')->once()->with('foo');

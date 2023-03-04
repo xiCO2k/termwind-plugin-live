@@ -14,7 +14,7 @@ if (! function_exists('Termwind\Live\live')) {
     /**
      * Render HTML to a string, and keeps the html live.
      */
-    function live(Closure $htmlResolver): Live
+    function live(Closure|string $htmlResolver): Live
     {
         $output = Termwind::getRenderer();
 
@@ -22,6 +22,10 @@ if (! function_exists('Termwind\Live\live')) {
             throw new InvalidRenderer(
                 'The renderer must be an instance of Symfony\'s ConsoleOutput',
             );
+        }
+
+        if (is_string($htmlResolver)) {
+            $htmlResolver = fn () => $htmlResolver;
         }
 
         $live = new Live($output->section(), new HtmlRenderer(), $htmlResolver);
