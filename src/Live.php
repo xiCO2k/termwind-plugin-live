@@ -86,9 +86,11 @@ final class Live
     /**
      * Clears the html, and re-renders the live html.
      */
-    public function refresh(): void
+    public function refresh(): self
     {
         $this->render();
+
+        return $this;
     }
 
     /**
@@ -113,9 +115,11 @@ final class Live
     /**
      * Freezes the terminal for the given amount of milliseconds.
      */
-    public function freeze(int $milliseconds): void
+    public function freeze(int $milliseconds): self
     {
         usleep($milliseconds * 1000);
+
+        return $this;
     }
 
     /**
