@@ -65,6 +65,18 @@ live(fn () => 'Loading...')
     ->while(fn () => $process->running());
 ```
 
+### `hideCursor()`
+
+The `hideCursor()` method may be used to hide the cursor on your output.
+
+```php
+use function Termwind\Live\live;
+
+live(fn () => 'foo')
+    ->hideCursor()
+    ->refreshEvery(seconds: 1);
+```
+
 ### `showCursor()`
 
 The `showCursor()` method may be used to show the cursor on your output.
@@ -74,8 +86,22 @@ use function Termwind\Live\live;
 
 live(fn () => 'foo')
     ->hideCursor()
-    ->refreshEvery(seconds: 1);
+    ->refreshEvery(seconds: 1)
+    ->showCursor();
 ```
+
+### `clear()`
+
+The `clear()` method may be used to clear the live output.
+
+```php
+use function Termwind\Live\live;
+
+live(fn () => 'foo')
+    ->refreshEvery(seconds: 1)
+    ->clear();
+```
+
 ---
 
 Termwind Live Plugin is an open-sourced software licensed under the **[MIT license](https://opensource.org/licenses/MIT)**.
