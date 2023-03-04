@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Termwind\Live;
 
 use Closure;
+use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
+use Symfony\Component\Console\SignalRegistry\SignalRegistry;
+use Termwind\Components\Element;
 use Termwind\HtmlRenderer;
 use Termwind\Live\Events\RefreshEvent;
 
@@ -14,6 +17,12 @@ use Termwind\Live\Events\RefreshEvent;
  */
 final class Live
 {
+    private Cursor $cursor;
+
+    private SignalRegistry $signals;
+
+    private string $lastContent = '';
+
     /**
      * Creates a new Live instance.
      */
@@ -22,7 +31,13 @@ final class Live
         private HtmlRenderer $renderer,
         private Closure $htmlResolver
     ) {
-        // ..
+        $this->cursor = new Cursor($output);
+        $this->signals = new SignalRegistry();
+
+        $this->registerSignals([SIGINT, SIGTERM], function (): void {
+            $this->showCursor();
+            exit;
+        });
     }
 
     /**
@@ -34,6 +49,27 @@ final class Live
     }
 
     /**
+     * Hides the cursor.
+     */
+    public function hideCursor(): self
+    {
+        $this->cursor->hide();
+
+        return $this;
+    }
+
+    /**
+     * Shows the cursor.
+     */
+    public function showCursor(): self
+    {
+        $this->cursor->clearOutput();
+        $this->cursor->show();
+
+        return $this;
+    }
+
+    /**
      * Renders the live html.
      */
     public function render(): bool
@@ -42,9 +78,7 @@ final class Live
 
         $html = $this->renderer->parse((string) $html);
 
-        $this->output->write($html->toString());
-
-        return true;
+        return $this->overwrite($html);
     }
 
     /**
@@ -52,8 +86,26 @@ final class Live
      */
     public function refresh(): void
     {
-        $this->clear();
         $this->render();
+    }
+
+    /**
+     * Overwrites the content.
+     */
+    public function overwrite(Element $html): bool
+    {
+        $html = $html->toString();
+
+        if ($this->lastContent === $html) {
+            return false;
+        }
+
+        $this->output->clear();
+        $this->output->write($html);
+
+        $this->lastContent = $html;
+
+        return true;
     }
 
     /**
@@ -82,10 +134,37 @@ final class Live
 
             $html = $this->renderer->parse((string) $html);
 
-            $this->clear();
-            $this->output->write($html->toString());
+            $this->overwrite($html);
         }
 
         return $this;
+    }
+
+    /**
+     * Refreshs the content while the condition is `true`.
+     */
+    public function while(Closure $callback): self
+    {
+        while (true) {
+            if (! $callback()) {
+                break;
+            }
+
+            $this->refresh();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Registers the console signals.
+     *
+     * @param  array<int, int>  $signals
+     */
+    private function registerSignals(array $signals, Closure $callback): void
+    {
+        foreach ($signals as $signal) {
+            $this->signals->register($signal, $callback);
+        }
     }
 }

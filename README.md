@@ -36,13 +36,46 @@ composer require xico2k/termwind-plugin-live
 ```php
 use function Termwind\Live\live;
 
-live(function () use ($total) {
+live(function () {
     static $total = 0;
 
     return sprintf('The content was refreshed %d times.', ++$total);
 })->refreshEvery(seconds: 1);
 ```
 
+### `refreshEvery(milliseconds: 0, seconds: 0)`
+
+The `refreshEvery()` method may be used to update the content by certain amount of time.
+
+```php
+use function Termwind\Live\live;
+
+live(fn () => 'foo')
+    ->refreshEvery(seconds: 1);
+```
+
+### `while(Closure $condition)`
+
+The `while()` method may be used to update the content while the condition is `true`.
+
+```php
+use function Termwind\Live\live;
+
+live(fn () => 'Loading...')
+    ->while(fn () => $process->running());
+```
+
+### `showCursor()`
+
+The `showCursor()` method may be used to show the cursor on your output.
+
+```php
+use function Termwind\Live\live;
+
+live(fn () => 'foo')
+    ->hideCursor()
+    ->refreshEvery(seconds: 1);
+```
 ---
 
 Termwind Live Plugin is an open-sourced software licensed under the **[MIT license](https://opensource.org/licenses/MIT)**.

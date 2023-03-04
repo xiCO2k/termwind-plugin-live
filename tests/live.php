@@ -14,7 +14,7 @@ it('requires symfony console output', function () {
 })->throws(InvalidRenderer::class);
 
 it('renders the closure result', function () {
-    $section = Mockery::mock(ConsoleSectionOutput::class);
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
     $section->shouldReceive('write')->once()->with('foo');
     $this->output->shouldReceive('section')->once()->andReturn($section);
 
@@ -22,38 +22,36 @@ it('renders the closure result', function () {
 });
 
 it('clears the previous closure result', function () {
-    $section = Mockery::mock(ConsoleSectionOutput::class);
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
     $section->shouldReceive('write')->once()->with('foo');
-    $section->shouldReceive('clear')->once();
+    $section->shouldReceive('clear')->times(2);
     $this->output->shouldReceive('section')->once()->andReturn($section);
 
     live(fn () => 'foo')->clear();
 });
 
 it('re-renders the closure result', function () {
-    $section = Mockery::mock(ConsoleSectionOutput::class);
-    $section->shouldReceive('write')->twice()->with('foo');
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+    $section->shouldReceive('write')->with('foo');
     $this->output->shouldReceive('section')->once()->andReturn($section);
 
     live(fn () => 'foo')->render();
 });
 
 it('may be refreshed', function () {
-    $section = Mockery::mock(ConsoleSectionOutput::class);
-    $section->shouldReceive('write')->twice()->with('foo');
-    $section->shouldReceive('clear')->once();
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+    $section->shouldReceive('write')->once()->with('foo');
     $this->output->shouldReceive('section')->once()->andReturn($section);
 
     live(fn () => 'foo')->refresh();
 });
 
-it('may be refreshed every X seconds', function () {
-    $section = Mockery::mock(ConsoleSectionOutput::class);
+it('may be refreshed every X times', function () {
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
     $section->shouldReceive('write')->once()->with(1);
     $section->shouldReceive('write')->once()->with(2);
     $section->shouldReceive('write')->once()->with(3);
     $section->shouldReceive('write')->once()->with(4);
-    $section->shouldReceive('clear')->times(3);
     $this->output->shouldReceive('section')->once()->andReturn($section);
 
     live(function (RefreshEvent $event) {
@@ -67,4 +65,42 @@ it('may be refreshed every X seconds', function () {
 
         $event->stop();
     })->refreshEvery(0);
+});
+
+it('may be refreshed while the condition is true', function () {
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+    $section->shouldReceive('write')->times(4);
+    $this->output->shouldReceive('section')->once()->andReturn($section);
+
+    live(fn () => rand())->while(function () {
+        static $counter = 0;
+
+        $counter++;
+
+        if ($counter > 3) {
+            return false;
+        }
+
+        return true;
+    });
+});
+
+it('hides the cursor', function () {
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+    $section->shouldReceive('write')->once()->with("\x1b[?25l");
+
+    $this->output->shouldReceive('section')->once()->andReturn($section);
+
+    live(fn () => 'foo')->hideCursor();
+});
+
+it('shows the cursor', function () {
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+
+    $section->shouldReceive('write')->once()->with("\x1b[0J");
+    $section->shouldReceive('write')->once()->with("\x1b[?25h\x1b[?0c");
+
+    $this->output->shouldReceive('section')->once()->andReturn($section);
+
+    live(fn () => 'foo')->showCursor();
 });
