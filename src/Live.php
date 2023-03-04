@@ -43,9 +43,11 @@ final class Live
     /**
      * Clears the html.
      */
-    public function clear(): void
+    public function clear(): self
     {
         $this->output->clear();
+
+        return $this;
     }
 
     /**
