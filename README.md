@@ -43,17 +43,24 @@ live(function () {
 })->refreshEvery(seconds: 1);
 ```
 
-### `refreshEvery(milliseconds: 0, seconds: 0)`
+### `refreshEvery()`
 
-The `refreshEvery()` method may be used to update the content by
+The `refreshEvery` methods may be used to update the content by
 certain amount of time.
 
-```php
-// Milliseconds
-live(fn () => 'foo')->refreshEvery(milliseconds: 250);
+#### Methods available:
+* `refreshEvery(milliseconds: 0, seconds: 0)`
+* `refreshEverySeconds($seconds)`
+* `refreshEveryMilliseconds($seconds)`
 
+```php
 // Seconds
-live(fn () => 'foo')->refreshEvery(seconds: 2);
+live(fn () => 'foo')->refreshEverySeconds(1); // or
+live(fn () => 'foo')->refreshEvery(seconds: 1);
+
+// Milliseconds
+live(fn () => 'foo')->refreshEveryMilliseconds(250); // or
+live(fn () => 'foo')->refreshEvery(milliseconds: 1);
 ```
 
 ### `while(Closure $condition)`
