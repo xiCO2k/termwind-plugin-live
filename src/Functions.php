@@ -25,7 +25,7 @@ if (! function_exists('Termwind\Live\live')) {
         }
 
         if (is_string($htmlResolver)) {
-            $htmlResolver = fn () => $htmlResolver;
+            $htmlResolver = fn (): string => $htmlResolver;
         }
 
         $live = new Live($output->section(), new HtmlRenderer(), $htmlResolver);
