@@ -75,6 +75,30 @@ it('may be refreshed every X times', function () {
     })->refreshEvery(0);
 });
 
+it('may be refreshed every X of seconds', function () {
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+    $section->shouldReceive('write')->once()->with('refreshed');
+    $this->output->shouldReceive('section')->once()->andReturn($section);
+
+    live(function (RefreshEvent $event) {
+        $event->stop();
+
+        return 'refreshed';
+    })->refreshEverySeconds(0);
+});
+
+it('may be refreshed every X of milliseconds', function () {
+    $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
+    $section->shouldReceive('write')->once()->with('refreshed');
+    $this->output->shouldReceive('section')->once()->andReturn($section);
+
+    live(function (RefreshEvent $event) {
+        $event->stop();
+
+        return 'refreshed';
+    })->refreshEveryMilliseconds(0);
+});
+
 it('may be refreshed while the condition is true', function () {
     $section = Mockery::mock(ConsoleSectionOutput::class)->shouldIgnoreMissing();
     $section->shouldReceive('write')->times(4);

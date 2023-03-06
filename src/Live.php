@@ -111,7 +111,7 @@ final class Live
     }
 
     /**
-     * Creates a new Refreshable Live instance.
+     * Refreshes the content by the amount provided.
      *
      * @return $this
      */
@@ -132,6 +132,26 @@ final class Live
         }
 
         return $this;
+    }
+
+    /**
+     * Refreshes the content every amount of seconds.
+     *
+     * @return $this
+     */
+    public function refreshEverySeconds(int $seconds): self
+    {
+        return $this->refreshEvery(seconds: $seconds);
+    }
+
+    /**
+     * Refreshes the content every amount of milliseconds.
+     *
+     * @return $this
+     */
+    public function refreshEveryMilliseconds(int $milliseconds): self
+    {
+        return $this->refreshEvery(milliseconds: $milliseconds);
     }
 
     /**
