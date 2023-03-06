@@ -45,48 +45,36 @@ live(function () {
 
 ### `refreshEvery(milliseconds: 0, seconds: 0)`
 
-The `refreshEvery()` method may be used to update the content by certain amount of time.
+The `refreshEvery()` method may be used to update the content by
+certain amount of time.
 
 ```php
-use function Termwind\Live\live;
+// Milliseconds
+live(fn () => 'foo')->refreshEvery(milliseconds: 250);
 
-live(fn () => 'foo')
-    ->refreshEvery(seconds: 1);
+// Seconds
+live(fn () => 'foo')->refreshEvery(seconds: 2);
 ```
 
 ### `while(Closure $condition)`
 
-The `while()` method may be used to update the content while the condition is `true`.
+The `while()` method may be used to update the content
+while the condition is `true`.
 
 ```php
-use function Termwind\Live\live;
-
 live(fn () => 'Loading...')
     ->while(fn () => $process->running());
 ```
 
-### `hideCursor()`
+### `showCursor()` and `hideCursor()`
 
-The `hideCursor()` method may be used to hide the cursor on your output.
-
-```php
-use function Termwind\Live\live;
-
-live(fn () => 'foo')
-    ->hideCursor()
-    ->refreshEvery(seconds: 1);
-```
-
-### `showCursor()`
-
-The `showCursor()` method may be used to show the cursor on your output.
+The `showCursor()` and `hideCursor()` methods may be used to
+show/hide the cursor on your cli.
 
 ```php
-use function Termwind\Live\live;
-
-live(fn () => 'foo')
+live('Loading...')
     ->hideCursor()
-    ->refreshEvery(seconds: 1)
+    ->while(fn () => $process->running())
     ->showCursor();
 ```
 
@@ -95,11 +83,28 @@ live(fn () => 'foo')
 The `clear()` method may be used to clear the live output.
 
 ```php
-use function Termwind\Live\live;
-
-live(fn () => 'foo')
-    ->refreshEvery(seconds: 1)
+live('Loading...')
+    ->while(fn () => $process->running())
     ->clear();
+```
+
+### `RefreshEvent`
+
+The `RefreshEvent` is passed to the `Closure` and provides a way
+to stop the execution.
+
+```php
+use Termwind\Live\Events\RefreshEvent;
+
+live(function (RefreshEvent $event) {
+    $shouldStop = true; // Call to check something...
+
+    if ($shouldStop) {
+        $event->stop();
+    }
+
+    return 'foo';
+})->refreshEvery(seconds: 1);
 ```
 
 ---
