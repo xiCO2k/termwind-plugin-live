@@ -51,6 +51,16 @@ final class Live
     }
 
     /**
+     * Freezes the terminal for the given amount of milliseconds.
+     */
+    public function freeze(int $milliseconds): self
+    {
+        usleep($milliseconds * 1000);
+
+        return $this;
+    }
+
+    /**
      * Hides the cursor.
      */
     public function hideCursor(): self
@@ -67,28 +77,6 @@ final class Live
     {
         $this->cursor->clearOutput();
         $this->cursor->show();
-
-        return $this;
-    }
-
-    /**
-     * Renders the live html.
-     */
-    public function render(): bool
-    {
-        $html = call_user_func($this->htmlResolver, $refreshingEvent = new RefreshEvent());
-
-        $html = $this->renderer->parse((string) $html);
-
-        return $this->overwrite($html);
-    }
-
-    /**
-     * Clears the html, and re-renders the live html.
-     */
-    public function refresh(): self
-    {
-        $this->render();
 
         return $this;
     }
@@ -113,11 +101,11 @@ final class Live
     }
 
     /**
-     * Freezes the terminal for the given amount of milliseconds.
+     * Clears the html, and re-renders the live html.
      */
-    public function freeze(int $milliseconds): self
+    public function refresh(): self
     {
-        usleep($milliseconds * 1000);
+        $this->render();
 
         return $this;
     }
@@ -144,6 +132,18 @@ final class Live
         }
 
         return $this;
+    }
+
+    /**
+     * Renders the live html.
+     */
+    public function render(): bool
+    {
+        $html = call_user_func($this->htmlResolver, $refreshingEvent = new RefreshEvent());
+
+        $html = $this->renderer->parse((string) $html);
+
+        return $this->overwrite($html);
     }
 
     /**
